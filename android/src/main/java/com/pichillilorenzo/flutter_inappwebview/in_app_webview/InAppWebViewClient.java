@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.pichillilorenzo.flutter_inappwebview.Util;
-import com.pichillilorenzo.flutter_inappwebview.credential_database.CredentialDatabase;
 import com.pichillilorenzo.flutter_inappwebview.in_app_browser.InAppBrowserDelegate;
 import com.pichillilorenzo.flutter_inappwebview.plugin_scripts_js.JavaScriptBridgeJS;
 import com.pichillilorenzo.flutter_inappwebview.types.ClientCertChallenge;
@@ -354,16 +353,8 @@ public class InAppWebViewClient extends WebViewClient {
     obj.put("port", port);
     obj.put("previousFailureCount", previousAuthRequestFailureCount);
 
-    if (credentialsProposed == null)
-      credentialsProposed = CredentialDatabase.getInstance(view.getContext()).getHttpAuthCredentials(host, protocol, realm, port);
-
-    URLCredential credentialProposed = null;
-    if (credentialsProposed != null && credentialsProposed.size() > 0) {
-      credentialProposed = credentialsProposed.get(0);
-    }
-
     URLProtectionSpace protectionSpace = new URLProtectionSpace(host, protocol, realm, port, view.getCertificate(), null);
-    HttpAuthenticationChallenge challenge = new HttpAuthenticationChallenge(protectionSpace, previousAuthRequestFailureCount, credentialProposed);
+    HttpAuthenticationChallenge challenge = new HttpAuthenticationChallenge(protectionSpace, previousAuthRequestFailureCount, null);
 
     channel.invokeMethod("onReceivedHttpAuthRequest", challenge.toMap(), new MethodChannel.Result() {
       @Override
@@ -377,9 +368,6 @@ public class InAppWebViewClient extends WebViewClient {
                 String username = (String) responseMap.get("username");
                 String password = (String) responseMap.get("password");
                 Boolean permanentPersistence = (Boolean) responseMap.get("permanentPersistence");
-                if (permanentPersistence != null && permanentPersistence) {
-                  CredentialDatabase.getInstance(view.getContext()).setHttpAuthCredential(host, protocol, realm, port, username, password);
-                }
                 handler.proceed(username, password);
                 return;
               case 2:
