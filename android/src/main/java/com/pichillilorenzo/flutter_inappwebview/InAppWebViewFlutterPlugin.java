@@ -7,7 +7,6 @@ import android.os.Build;
 import android.webkit.ValueCallback;
 
 import com.pichillilorenzo.flutter_inappwebview.chrome_custom_tabs.ChromeSafariBrowserManager;
-import com.pichillilorenzo.flutter_inappwebview.credential_database.CredentialDatabaseHandler;
 import com.pichillilorenzo.flutter_inappwebview.in_app_browser.InAppBrowserManager;
 import com.pichillilorenzo.flutter_inappwebview.in_app_webview.FlutterWebViewFactory;
 import com.pichillilorenzo.flutter_inappwebview.headless_in_app_webview.HeadlessInAppWebViewManager;
@@ -30,7 +29,6 @@ public class InAppWebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   public ChromeSafariBrowserManager chromeSafariBrowserManager;
   public InAppWebViewStatic inAppWebViewStatic;
   public MyCookieManager myCookieManager;
-  public CredentialDatabaseHandler credentialDatabaseHandler;
   public MyWebStorage myWebStorage;
   public ServiceWorkerManager serviceWorkerManager;
   public WebViewFeatureManager webViewFeatureManager;
@@ -90,9 +88,6 @@ public class InAppWebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       serviceWorkerManager = new ServiceWorkerManager(this);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      credentialDatabaseHandler = new CredentialDatabaseHandler(this);
-    }
     webViewFeatureManager = new WebViewFeatureManager(this);
   }
 
@@ -121,10 +116,6 @@ public class InAppWebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     if (myWebStorage != null) {
       myWebStorage.dispose();
       myWebStorage = null;
-    }
-    if (credentialDatabaseHandler != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      credentialDatabaseHandler.dispose();
-      credentialDatabaseHandler = null;
     }
     if (inAppWebViewStatic != null) {
       inAppWebViewStatic.dispose();
